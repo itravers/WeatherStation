@@ -39,7 +39,12 @@ router.get('/threeDay/:zipCode', function(req, res){
 //FAKE API REQUEST
   request('http://localhost:3001/api/testJson', function(error, response, body){
     if(!error && response.statusCode == 200){
-      res.send(body);
+      var jsonData = JSON.parse(body);
+      var lowTemp = jsonData.forecast.simpleforecast.forecastday[1].low.fahrenheit;
+      var highTemp = jsonData.forecast.simpleforecast.forecastday[1].high.fahrenheit;
+      var precipChance = jsonData.forecast.simpleforecast.forecastday[1].pop;
+
+      res.send(lowTemp + ":" + highTemp + ":" + precipChance);
     }else{
       res.send("There was an error: " + response.statusCode + " : " + error);
     }
