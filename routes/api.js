@@ -4,6 +4,10 @@
 */
 
 var express = require('express');
+var request = require('request');
+var fs = require('fs'); //used to open jsonTest.json
+var testJson = require('../jsonTest.json'); //used to test json formatting without making api calls
+
 var router = express.Router();
 
 /* GET users listing. */
@@ -20,7 +24,36 @@ router.get('/', function(req, res, next) {
 */
 router.get('/threeDay/:zipCode', function(req, res){
   var zipCode = req.params.zipCode;
-  res.send('ZipCode: ' + zipCode);
+  
+  //make the api request
+/* THIS IS THE REAL API REQUEST
+  request('http://api.wunderground.com/api/411734c88ec29497/forecast/q/'+zipCode+'.json', function(error, response, body){
+    if(!error && response.statusCode == 200){
+      res.send(body);
+    }else{
+      res.send("There was an error: " + response.statusCode + " : " + error);
+    }
+  });
+*/ //END REAL API REQUEST
+
+//FAKE API REQUEST
+  request('http://localhost:3001/api/testJson', function(error, response, body){
+    if(!error && response.statusCode == 200){
+      res.send(body);
+    }else{
+      res.send("There was an error: " + response.statusCode + " : " + error);
+    }
+  }); 
+
 });
+
+//test json
+router.get('/testJson', function(req, res){
+  //var json = JSON.parse(fs.readFileSync('jsonTest.json', 'utf8'));
+  var file = fs.readFileSync('jsonTest.json', 'utf8');
+
+  res.send(file);
+});
+
 
 module.exports = router;
