@@ -1,3 +1,27 @@
+/**
+ * Firmware for the one day weather station.
+ * This uses ethernet to make an api call to chicosystems
+ * which returns the low temp, high temp and precipation chance
+ * for a given zip code.
+ * 
+ * The zip code is chosen via 5 potentiometers
+ * The result is displayed on 3 analog panel meters.
+ * When the user flips the refresh switch an api call is made
+ * with the current zip code settings, the result is then displayed
+ */
+
+ #include <SPI.h>
+ #include <Ethernet.h>
+
+ //Assigne a MAC address to the board, this will need to be different for every board
+ byte mac[] = { 0xDE, 0xAD, 0xBC, 0xEF, 0xFE, 0xED };
+ //the Server we make our api call to
+ char server[] = "192.168.1.197";
+ //Set the static ip address that will be used if DHCP fails
+ IPAddress ip(192, 168, 1, 222);
+ //Initialze the Ethernet client library
+ EthernetClient client;
+
 //Analog Meters
 int lowMeter = 3;
 int highMeter = 5;
@@ -27,6 +51,29 @@ int zipFiveInput;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+
+  //Start the Ethernet Connection
+  if(Ethernet.begin(mac) == 0){
+    Serial.println("Failed to configure Ethernet using DHCP");
+    //try to configure ethernet using ip address
+    Ethernet.begin(mac, ip);
+  }
+
+  //Give the ethernet shield time to initialize
+  Serial.println("Connecting Ethernet...");
+  delay(1000);
+
+  //if we get a connection, print it to serial
+  if(client.connect(server, 3001)){
+    Serial.println("Ethernet Connected!");
+    //make a demo http request
+    client.println("GET /api/connectionTest HTTP/1.1");
+    client.println("HOST: 192.168.1.197");
+    client.println("Connection: close");
+    client.println();
+  }else{
+    Serial.println("Ethernet Connection FAILED!");
+  }
 
   //init toggle pin
   pinMode(togglePin, INPUT);

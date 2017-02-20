@@ -60,5 +60,11 @@ router.get('/testJson', function(req, res){
   res.send(file);
 });
 
+//connection test for arduino firmware
+router.get('connectionTest', function(req, res){
+  res.send("Connected to API");
+
+});
+
 
 module.exports = router;
