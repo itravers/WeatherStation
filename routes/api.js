@@ -44,7 +44,7 @@ router.get('/threeDay/:zipCode', function(req, res){
       var highTemp = jsonData.forecast.simpleforecast.forecastday[1].high.fahrenheit;
       var precipChance = jsonData.forecast.simpleforecast.forecastday[1].pop;
 
-      res.send(lowTemp + ":" + highTemp + ":" + precipChance);
+      res.send("$" + lowTemp + "$" + highTemp + "$" + precipChance);
     }else{
       res.send("There was an error: " + response.statusCode + " : " + error);
     }
@@ -61,7 +61,7 @@ router.get('/testJson', function(req, res){
 });
 
 //connection test for arduino firmware
-router.get('connectionTest', function(req, res){
+router.get('/connectionTest', function(req, res){
   res.send("Connected to API");
 
 });

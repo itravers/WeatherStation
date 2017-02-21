@@ -12,6 +12,8 @@
 
  #include <SPI.h>
  #include <Ethernet.h>
+ #include <Bridge.h>
+ #include <HttpClient.h>
 
  //Assigne a MAC address to the board, this will need to be different for every board
  byte mac[] = { 0xDE, 0xAD, 0xBC, 0xEF, 0xFE, 0xED };
@@ -21,6 +23,7 @@
  IPAddress ip(192, 168, 1, 222);
  //Initialze the Ethernet client library
  EthernetClient client;
+ HttpClient httpClient;
 
 //Analog Meters
 int lowMeter = 3;
@@ -40,6 +43,10 @@ int lowMeterOutput;
 int highMeterOutput;
 int precipMeterOutput;
 
+//toggle inputs
+boolean toggleInput;
+boolean lastToggleInput; //if lastToggleInput doesn't equal toggle input, it means the switch has been toggled
+
 //zip code inputs
 int zipOneInput;
 int zipTwoInput;
@@ -47,10 +54,23 @@ int zipThreeInput;
 int zipFourInput;
 int zipFiveInput;
 
+//zip code inputs mapped from 0 - 9
+int zipOneInputMapped;
+int zipTwoInputMapped;
+int zipThreeInputMapped;
+int zipFourInputMapped;
+int zipFiveInputMapped;
+
 
 void setup() {
   // put your setup code here, to run once:
+
+  //start bridge, wait for serial connection before going into loop
+  ////Bridge.begin();
   Serial.begin(9600);
+
+  //wait for serial to connect
+  ////while(!Serial);
 
   //Start the Ethernet Connection
   if(Ethernet.begin(mac) == 0){
@@ -63,17 +83,21 @@ void setup() {
   Serial.println("Connecting Ethernet...");
   delay(1000);
 
-  //if we get a connection, print it to serial
+ /* //if we get a connection, print it to serial
   if(client.connect(server, 3001)){
     Serial.println("Ethernet Connected!");
     //make a demo http request
-    client.println("GET /api/connectionTest HTTP/1.1");
+    client.println("GET /api/threeDay/96091 HTTP/1.1");
     client.println("HOST: 192.168.1.197");
     client.println("Connection: close");
     client.println();
   }else{
     Serial.println("Ethernet Connection FAILED!");
   }
+  */
+
+  //use httpclient to get connection from server
+  ////httpClient.get("http://192.168.1.197:3001/api/");
 
   //init toggle pin
   pinMode(togglePin, INPUT);
@@ -98,34 +122,82 @@ void setup() {
   zipFourInput = 0;
   zipFiveInput = 0;
 
-  delay(1000);
+  delay(500);
 
   //test meters
   digitalWrite(lowMeter, HIGH);
-  delay(1000);
+  delay(500);
   digitalWrite(highMeter, HIGH);
-  delay(1000);
+  delay(500);
   digitalWrite(precipMeter, HIGH);
-  delay(3000);
+  delay(1000);
 
   digitalWrite(lowMeter, LOW);
   digitalWrite(highMeter, LOW);
   digitalWrite(precipMeter, LOW);
 
+  //toggleInput = digitalRead(togglePin);
+  //lastToggleInput = toggleInput;
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  //Serial.println("sketch loaded");
-  //delay(100);
+ 
+  String data;
 
-  boolean toggleInput = digitalRead(togglePin);
-
-  zipOneInput = analogRead(zipOne);
+   zipOneInput = analogRead(zipOne);
   zipTwoInput = analogRead(zipTwo);
   zipThreeInput = analogRead(zipThree);
   zipFourInput = analogRead(zipFour);
   zipFiveInput = analogRead(zipFive);
+
+  while(client.available()){
+    char c = client.read();
+    if(c == '$') {//this is the start of our data
+      while(client.available()){//put the data into the data string
+        c = client.read();
+        data += c;
+      }
+    }
+  }
+
+  if(data.length() > 0){
+    Serial.print("DATA: ");
+    Serial.println(data);
+  }
+
+  //if the server is disconnected, stop the client
+  if(!client.connected()){
+   // Serial.println();
+   // Serial.println("disconnecting from ethernet");
+    client.stop();
+  }
+
+  toggleInput = digitalRead(togglePin);
+  if(toggleInput != lastToggleInput){
+    Serial.println("Switch has been toggled.");
+    if(client.connect(server, 3001)){
+      Serial.println("Ethernet Connected!");
+      //make a demo http request
+      String zipString1 = String(zipOneInputMapped);
+      String zipString2 = String(zipTwoInputMapped);
+      String zipString3 = String(zipThreeInputMapped);
+      String zipString4 = String(zipFourInputMapped);
+      String zipString5 = String(zipFiveInputMapped);
+      String zipString = zipString1+zipString2+zipString3+zipString4+zipString5;
+      Serial.print("ZIP STRING: ");
+      Serial.println(zipString);
+      client.println("GET /api/threeDay/"+zipString+" HTTP/1.1");
+      client.println("HOST: 192.168.1.197");
+      client.println("Connection: close");
+      client.println();
+    }else{
+      Serial.println("Ethernet Connection FAILED!");
+   }
+    
+  }
+
+ 
   
   analogWrite(lowMeter, map(zipOneInput, 0, 1023, 0, 255));
   analogWrite(highMeter, map(zipTwoInput, 0, 1023, 0, 255));
@@ -148,12 +220,20 @@ void loop() {
   Serial.print("  ");
 
   Serial.print("ZIP: ");
-  Serial.print(map(zipOneInput, 0, 1023, 0, 9));
-  Serial.print(map(zipTwoInput, 0, 1023, 0, 9));
-  Serial.print(map(zipThreeInput, 0, 1023, 0, 9));
-  Serial.print(map(zipFourInput, 0, 1023, 0, 9));
-  Serial.print(map(zipFiveInput, 0, 1023, 0, 9));
+  zipOneInputMapped = map(zipOneInput, 0, 1021, 0, 9);
+  zipTwoInputMapped = map(zipTwoInput, 0, 1021, 0, 9);
+  zipThreeInputMapped = map(zipThreeInput, 0, 1021, 0, 9);
+  zipFourInputMapped = map(zipFourInput, 0, 1021, 0, 9);
+  zipFiveInputMapped = map(zipFiveInput, 0, 1021, 0, 9);
+  
+  Serial.print(zipOneInputMapped);
+  Serial.print(zipTwoInputMapped);
+  Serial.print(zipThreeInputMapped);
+  Serial.print(zipFourInputMapped);
+  Serial.print(zipFiveInputMapped);
   Serial.println();
-  delay(200);
+
+  lastToggleInput = toggleInput;
+  delay(1000);
 
 }
