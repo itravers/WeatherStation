@@ -25,6 +25,10 @@
  EthernetClient client;
  HttpClient httpClient;
 
+  String S_lowTemp;
+    String S_highTemp;
+    String S_precipChance;
+
 //Analog Meters
 int lowMeter = 3;
 int highMeter = 5;
@@ -144,6 +148,7 @@ void setup() {
 void loop() {
  
   String data;
+  
 
    zipOneInput = analogRead(zipOne);
   zipTwoInput = analogRead(zipTwo);
@@ -152,18 +157,48 @@ void loop() {
   zipFiveInput = analogRead(zipFive);
 
   while(client.available()){
+    S_lowTemp = "";
+    S_highTemp = "";
+    S_precipChance = "";
     char c = client.read();
     if(c == '$') {//this is the start of our data
       while(client.available()){//put the data into the data string
         c = client.read();
-        data += c;
+        if(c == '$'){//we've completed s_lowTemp now go to next
+          while(client.available()){
+            c = client.read();
+            if(c == '$'){//Weve completed s_highTemp, now do next
+              while(client.available()){
+                c = client.read();
+                if(c == '$'){
+                  //we've finished S_precipChange, we are done parsing our data.
+                }else{
+                  S_precipChance +=c;
+                }
+              }
+            }else{
+              S_highTemp += c;
+            }
+          }
+        }else{
+          S_lowTemp += c;
+        }
       }
     }
   }
 
-  if(data.length() > 0){
-    Serial.print("DATA: ");
-    Serial.println(data);
+  if(S_lowTemp.length() > 0){
+   // Serial.print("DATA: ");
+   // Serial.println(data);
+
+   
+
+    Serial.print("Low : ");
+    Serial.print(S_lowTemp);
+    Serial.print("   High: ");
+    Serial.print(S_highTemp);
+    Serial.print("   Prec: ");
+    Serial.println(S_precipChance);
   }
 
   //if the server is disconnected, stop the client
@@ -199,9 +234,14 @@ void loop() {
 
  
   
-  analogWrite(lowMeter, map(zipOneInput, 0, 1023, 0, 255));
-  analogWrite(highMeter, map(zipTwoInput, 0, 1023, 0, 255));
-  analogWrite(precipMeter, map(zipThreeInput, 0, 1023, 0, 255));
+  //analogWrite(lowMeter, map(zipOneInput, 0, 1023, 0, 255));
+  //analogWrite(highMeter, map(zipTwoInput, 0, 1023, 0, 255));
+  //analogWrite(precipMeter, map(zipThreeInput, 0, 1023, 0, 255));
+
+  //get temps and write to meters
+  analogWrite(lowMeter, map(S_lowTemp.toInt(), 0, 100, 0, 255));
+  analogWrite(highMeter, map(S_highTemp.toInt(), 0, 100, 0, 255));
+  analogWrite(precipMeter, map(S_precipChance.toInt(), 0, 100, 0, 255));
 
   Serial.print("Toggle: ");
   Serial.print(toggleInput);
