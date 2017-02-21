@@ -37,8 +37,9 @@ router.get('/threeDay/:zipCode', function(req, res){
 */ //END REAL API REQUEST
 
 //FAKE API REQUEST
-  request('http://localhost:3001/api/testJson', function(error, response, body){
-    if(!error && response.statusCode == 200){
+  //request('http://localhost:3001/api/testJson', function(error, response, body){
+  request('http://api.wunderground.com/api/411734c88ec29497/forecast/q/'+zipCode+'.json', function(error, response, body){ 
+   if(!error && response.statusCode == 200){
       var jsonData = JSON.parse(body);
       var lowTemp = jsonData.forecast.simpleforecast.forecastday[1].low.fahrenheit;
       var highTemp = jsonData.forecast.simpleforecast.forecastday[1].high.fahrenheit;
