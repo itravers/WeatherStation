@@ -45,6 +45,8 @@ router.get('/threeDay/:zipCode', function(req, res){
       	var lowTemp = jsonData.forecast.simpleforecast.forecastday[1].low.fahrenheit;
       	var highTemp = jsonData.forecast.simpleforecast.forecastday[1].high.fahrenheit;
       	var precipChance = jsonData.forecast.simpleforecast.forecastday[1].pop;
+      
+        console.log("$" + lowTemp + "$" + highTemp + "$" + precipChance);
         res.send("$" + lowTemp + "$" + highTemp + "$" + precipChance);
       }else{
         console.log("Json Data for: "+ zipCode + " is undefined");

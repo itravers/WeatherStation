@@ -220,6 +220,9 @@ void loop() {
       String zipString4 = String(zipFourInputMapped);
       String zipString5 = String(zipFiveInputMapped);
       String zipString = zipString1+zipString2+zipString3+zipString4+zipString5;
+      if(zipString.equals("00000")){
+        zipString = "96091";
+      }
       Serial.print("ZIP STRING: ");
       Serial.println(zipString);
       client.println("GET /api/threeDay/"+zipString+" HTTP/1.1");
