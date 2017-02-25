@@ -15,6 +15,10 @@
  #include <Bridge.h>
  #include <HttpClient.h>
 
+//boxVersion and SerialNum
+String boxVersion = "threeDay";
+String serialNum = "0000";
+
  //Assigne a MAC address to the board, this will need to be different for every board
  byte mac[] = { 0xDE, 0xAD, 0xBC, 0xEF, 0xFE, 0xED };
  //the Server we make our api call to
@@ -225,7 +229,7 @@ void loop() {
       }
       Serial.print("ZIP STRING: ");
       Serial.println(zipString);
-      client.println("GET /api/threeDay/"+zipString+" HTTP/1.1");
+      client.println("GET /api/threeDay/"+zipString+"/"+boxVersion+"/"+serialNum+" HTTP/1.1");
       client.println("HOST: 192.168.1.197");
       client.println("Connection: close");
       client.println();
