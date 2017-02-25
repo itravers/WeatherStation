@@ -33,7 +33,7 @@
 int lowMeter = 3;
 int highMeter = 5;
 int precipMeter = 6;
-int togglePin = 12;
+int togglePin = 9;
 
 //zip code meters
 int zipOne =   A0;
