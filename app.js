@@ -6,8 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 //DB dependencies
-var mongo = require("mongodb");
-var monk = require("monk");
+var mongo = require('mongodb');
+var monk = require('monk');
 var db = monk('localhost:27017/WeatherStation');
 
 var index = require('./routes/index');
@@ -27,6 +27,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Add DB to middleware
+app.use(function(req, res, next){
+  req.db = db;
+  next();
+});
 
 app.use('/', index);
 app.use('/users', users);
