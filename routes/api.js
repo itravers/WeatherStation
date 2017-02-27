@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
    Second: High Temp fot Tomorrow in F.
    Third: Chance of Precipitation Tomorrow in %.
 */
-router.get('/threeDay/:zipCode/:boxVersion/:serialNum', function(req, res){
+router.get('/oneDay/:zipCode/:boxVersion/:serialNum', function(req, res){
   var zipCode = req.params.zipCode;
 
   

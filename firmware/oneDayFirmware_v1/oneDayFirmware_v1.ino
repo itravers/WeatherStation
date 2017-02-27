@@ -16,7 +16,7 @@
  #include <HttpClient.h>
 
 //boxVersion and SerialNum
-String boxVersion = "threeDay";
+String boxVersion = "oneDay";
 String serialNum = "0000";
 
  //Assigne a MAC address to the board, this will need to be different for every board
@@ -95,7 +95,7 @@ void setup() {
   if(client.connect(server, 3001)){
     Serial.println("Ethernet Connected!");
     //make a demo http request
-    client.println("GET /api/threeDay/96091 HTTP/1.1");
+    client.println("GET /api/oneDay/96091 HTTP/1.1");
     client.println("HOST: 192.168.1.197");
     client.println("Connection: close");
     client.println();
@@ -229,7 +229,7 @@ void loop() {
       }
       Serial.print("ZIP STRING: ");
       Serial.println(zipString);
-      client.println("GET /api/threeDay/"+zipString+"/"+boxVersion+"/"+serialNum+" HTTP/1.1");
+      client.println("GET /api/oneDay/"+zipString+"/"+boxVersion+"/"+serialNum+" HTTP/1.1");
       client.println("HOST: 192.168.1.197");
       client.println("Connection: close");
       client.println();
