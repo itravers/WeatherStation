@@ -22,7 +22,7 @@ String serialNum = "0000";
  //Assigne a MAC address to the board, this will need to be different for every board
  byte mac[] = { 0xDE, 0xAD, 0xBC, 0xEF, 0xFE, 0xED };
  //the Server we make our api call to
- char server[] = "192.168.1.197";
+ char server[] = "weatherstation.chicosystems.com";
  //Set the static ip address that will be used if DHCP fails
  IPAddress ip(192, 168, 1, 222);
  //Initialze the Ethernet client library
