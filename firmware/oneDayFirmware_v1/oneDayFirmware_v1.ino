@@ -17,14 +17,14 @@
 
 //boxVersion and SerialNum
 String boxVersion = "oneDay";
-String serialNum = "0000";
+String serialNum = "0001";
 
  //Assigne a MAC address to the board, this will need to be different for every board
  byte mac[] = { 0xDE, 0xAD, 0xBC, 0xEF, 0xFE, 0xED };
  //the Server we make our api call to
  char server[] = "weatherstation.chicosystems.com";
  //Set the static ip address that will be used if DHCP fails
- IPAddress ip(192, 168, 1, 222);
+ IPAddress ip(192, 168, 1, 223);
  //Initialze the Ethernet client library
  EthernetClient client;
  HttpClient httpClient;
