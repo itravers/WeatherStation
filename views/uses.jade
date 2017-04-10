@@ -15,7 +15,10 @@ block content
                     th ip
                     th ZipCode
                     th Time
-                    th Forecast
+                    th Forecast String
+                    th Low
+                    th High
+                    th Precip %
                     th Box Version
                     th Serial Number
             tbody
@@ -26,5 +29,8 @@ block content
                         td #{use.zipcode}
                         td #{moment(1000 * use.time).format('YYYY/MM/DD h:mm:ss a')}
                         td #{use.forecast}
+                        td #{forecasts[i][0]}
+                        td #{forecasts[i][1]}
+                        td #{forecasts[i][2]}
                         td #{use.boxversion}
                         td #{use.serialNum}
