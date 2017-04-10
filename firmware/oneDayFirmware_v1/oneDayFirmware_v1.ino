@@ -76,38 +76,12 @@ void setup() {
   //start bridge, wait for serial connection before going into loop
   ////Bridge.begin();
   Serial.begin(9600);
+  Serial.println("Starting Serial");
 
   //wait for serial to connect
   ////while(!Serial);
 
-  //Start the Ethernet Connection
-  if(Ethernet.begin(mac) == 0){
-    Serial.println("Failed to configure Ethernet using DHCP");
-    //try to configure ethernet using ip address
-    Ethernet.begin(mac, ip);
-  }
-
-  //Give the ethernet shield time to initialize
-  Serial.println("Connecting Ethernet...");
-  delay(1000);
-
- /* //if we get a connection, print it to serial
-  if(client.connect(server, 3001)){
-    Serial.println("Ethernet Connected!");
-    //make a demo http request
-    client.println("GET /api/oneDay/96091 HTTP/1.1");
-    client.println("HOST: 192.168.1.197");
-    client.println("Connection: close");
-    client.println();
-  }else{
-    Serial.println("Ethernet Connection FAILED!");
-  }
-  */
-
-  //use httpclient to get connection from server
-  ////httpClient.get("http://192.168.1.197:3001/api/");
-
-  //init toggle pin
+   //init toggle pin
   pinMode(togglePin, INPUT);
  // digitalWrite(togglePin, HIGH);
 
@@ -143,6 +117,23 @@ void setup() {
   digitalWrite(lowMeter, LOW);
   digitalWrite(highMeter, LOW);
   digitalWrite(precipMeter, LOW);
+
+  //Start the Ethernet Connection
+  if(Ethernet.begin(mac) == 0){
+    Serial.println("Failed to configure Ethernet using DHCP");
+    //try to configure ethernet using ip address
+    Ethernet.begin(mac, ip);
+  }
+
+  //Give the ethernet shield time to initialize
+  Serial.println("Connecting Ethernet...");
+  delay(1000);
+
+
+  //use httpclient to get connection from server
+  ////httpClient.get("http://192.168.1.197:3001/api/");
+
+ 
 
   //toggleInput = digitalRead(togglePin);
   //lastToggleInput = toggleInput;
